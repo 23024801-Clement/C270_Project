@@ -29,4 +29,5 @@ def calculator():
     return render_template("calculator.html", result=result)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Run Flask on port 8080
+    app.run(port=8080)
