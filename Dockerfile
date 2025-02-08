@@ -8,4 +8,4 @@ RUN pip3 install flask
 
 CMD ["python","app.py"]
 
-EXPOSE 8080
+EXPOSE 5050
