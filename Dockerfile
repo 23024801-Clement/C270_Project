@@ -1,8 +1,8 @@
 FROM python
 
-WORKDIR /C270_Project
+WORKDIR /app
 
-COPY . .
+COPY . /app
 
 RUN pip3 install flask
 
