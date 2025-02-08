@@ -22,7 +22,7 @@ pipeline {
 
         stage("Run Tests Inside Docker") {
             steps {
-                sh "docker run --rm -v $(pwd):/app -w /app ${IMAGE_NAME} pytest test_calculator.py"
+                sh 'docker run --rm -v "$(pwd)":/app -w /app ${IMAGE_NAME} pytest test_calculator.py'
             }
         }
 
@@ -30,12 +30,8 @@ pipeline {
             steps {
                 script {
                     catchError(buildResult: 'SUCCESS') {
-                        sh """
-                        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
-                            docker stop ${CONTAINER_NAME}
-                            docker rm ${CONTAINER_NAME}
-                        fi
-                        """
+                        sh "docker stop ${CONTAINER_NAME} || true"
+                        sh "docker rm ${CONTAINER_NAME} || true"
                     }
                 }
             }
