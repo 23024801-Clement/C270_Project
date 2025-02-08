@@ -20,9 +20,9 @@ def calculator():
             elif operation == "*":
                 result = num1 * num2
             elif operation == "/":
-                result = num1 / num2 if num2 != 0 else "Error: Division by zero"
+                result = num1 / num2 if num2 != 0 else print("Error: Division by zero")
             else:
-                result = "Invalid Operation"
+                result = print("Invalid Operation")
         except Exception as e:
             result = f"Error: {e}"
 
