@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "80:50"
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+  api:
+    image: your-api-image:latest
+    deploy:
+      replicas: 2
+
+author: "liying23025305"
