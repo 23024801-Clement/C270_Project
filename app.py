@@ -22,7 +22,7 @@ def calculator():
             elif operation == "/":
                 result = num1 / num2 if num2 != 0 else print("Error: Division by zero")
             else:
-                result = print("Invalid Operation")
+                return "Invalid Operation"
         except Exception as e:
             result = f"Error: {e}"
 
