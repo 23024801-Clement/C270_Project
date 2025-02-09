@@ -12,4 +12,4 @@ CMD ["python","app.py"]
 
 
 
-EXPOSE 5050
+EXPOSE 7070
