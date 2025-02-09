@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage("Checkout Code") {
             steps {
-                git 'https://github.com/23024801-Clement/C270_Project.git'
+                git branch: 'main', url: 'https://github.com/23024801-Clement/C270_Project.git'
             }
         }
 
@@ -22,7 +22,12 @@ pipeline {
 
         stage("Run Tests Inside Docker") {
             steps {
-                sh 'docker run --rm -v "$(pwd)":/app -w /app ${IMAGE_NAME} pytest test_calculator.py'
+                script {
+                    def testResult = sh(script: "docker run --rm ${IMAGE_NAME} pytest test_calculator.py", returnStatus: true)
+                    if (testResult != 0) {
+                        error "Tests failed! Stopping deployment."
+                    }
+                }
             }
         }
 
@@ -30,8 +35,12 @@ pipeline {
             steps {
                 script {
                     catchError(buildResult: 'SUCCESS') {
-                        sh "docker stop ${CONTAINER_NAME} || true"
-                        sh "docker rm ${CONTAINER_NAME} || true"
+                        sh '''
+                        if [ "$(docker ps -q -f name=${CONTAINER_NAME})" ]; then
+                            docker stop ${CONTAINER_NAME}
+                            docker rm ${CONTAINER_NAME}
+                        fi
+                        '''
                     }
                 }
             }
@@ -46,10 +55,10 @@ pipeline {
 
     post {
         success {
-            echo "[SUCCESS] Build, Test & Deployment Completed!"
+            echo "SUCCESS"
         }
         failure {
-            echo "[ERROR] Build, Test, or Deployment Failed! Check logs."
+            echo "ERROR"
         }
     }
 }
