@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage("Checkout Code") {
             steps {
-                git branch: 'main', url: 'https://github.com/23024801-Clement/C270_Project.git'
+                git branch: 'master', url: 'https://github.com/23024801-Clement/C270_Project.git'
             }
         }
 
