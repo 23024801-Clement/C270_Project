@@ -2,32 +2,24 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "c270_project"
-        CONTAINER_NAME = "calculator"
+        IMAGE_NAME = "flask_calculator"
+        CONTAINER_NAME = "calculator_app"
         PORT = "5050"
     }
 
     stages {
         stage("Checkout Code") {
             steps {
-                git branch: 'master', url: 'https://github.com/23024801-Clement/C270_Project.git'
+                git 'https://github.com/23024801-Clement/C270_Project.git'
             }
         }
 
-        stage("Build Docker Image") {
+        stage("Build & Test Docker Image") {
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
-            }
-        }
-
-        stage("Run Tests Inside Docker") {
-            steps {
-                script {
-                    def testResult = sh(script: "docker run --rm ${IMAGE_NAME} pytest test_calculator.py", returnStatus: true)
-                    if (testResult != 0) {
-                        error "Tests failed! Stopping deployment."
-                    }
-                }
+                sh """
+                docker build -t ${IMAGE_NAME} .
+                docker run --rm ${IMAGE_NAME} pytest test_calculator.py
+                """
             }
         }
 
@@ -35,12 +27,8 @@ pipeline {
             steps {
                 script {
                     catchError(buildResult: 'SUCCESS') {
-                        sh '''
-                        if [ "$(docker ps -q -f name=${CONTAINER_NAME})" ]; then
-                            docker stop ${CONTAINER_NAME}
-                            docker rm ${CONTAINER_NAME}
-                        fi
-                        '''
+                        sh "docker stop ${CONTAINER_NAME} || true"
+                        sh "docker rm ${CONTAINER_NAME} || true"
                     }
                 }
             }
@@ -55,10 +43,10 @@ pipeline {
 
     post {
         success {
-            echo "SUCCESS"
+            echo "[SUCCESS] Build, Test & Deployment Completed!"
         }
         failure {
-            echo "ERROR"
+            echo "[ERROR] Build, Test, or Deployment Failed! Check logs."
         }
     }
 }
